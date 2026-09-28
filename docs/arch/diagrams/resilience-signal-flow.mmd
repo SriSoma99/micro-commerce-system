@@ -1,0 +1,9 @@
+flowchart LR
+    API["Backend response<br/>ResilientPayload&lt;T&gt;<br/>{ data, isFallback, source, retrievedAt }"]
+    API --> Hook["useFetch&lt;ResilientPayload&lt;T&gt;&gt;<br/>(generic hook, no domain knowledge)"]
+    Hook --> Consumer{"Which consumer?"}
+    Consumer -->|"App (list fetch)"| ListStatus["listStatus derived from listPayload"]
+    Consumer -->|"ProductDetailModal (detail fetch)"| ModalCallback["onStatusChange(status)<br/>lifts result into App.modalStatus"]
+    ListStatus --> MostRecent["mostRecent(listStatus, modalStatus)"]
+    ModalCallback --> MostRecent
+    MostRecent --> Badge["StatusBadge<br/>green 'Live Core Microservice'<br/>or amber pulsing 'Circuit Breaker Fallback Node'"]

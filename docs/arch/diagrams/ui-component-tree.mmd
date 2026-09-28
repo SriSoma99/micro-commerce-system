@@ -1,0 +1,35 @@
+flowchart TB
+    App["App.tsx<br/>State: route, authSession, activeCart, storeConfig, modalStatus"]
+    App --> Header["Header.tsx"]
+    Header --> SearchBox["SearchBox.tsx"]
+    Header --> StorePicker["StorePicker.tsx"]
+    Header --> StatusBadge["StatusBadge.tsx"]
+    Header --> CartButton["CartButton"]
+    Header -. "role: store-manager / finance / admin" .-> PortalBanner["Workspace Quick Switcher Banners"]
+
+    App --> Router{"Route Switcher (Hash Router)"}
+    Router -->|"#shop (default)"| ShopPage["ShopPage.tsx"]
+    ShopPage --> Sidebar["Sidebar.tsx (facets)"]
+    ShopPage --> DepartmentTiles["DepartmentTiles.tsx"]
+    ShopPage --> ProductGrid["ProductGrid"]
+    ProductGrid --> ProductCard["ProductCard.tsx"]
+
+    Router -->|"#checkout"| CheckoutPage["CheckoutPage.tsx"]
+    CheckoutPage --> PickupSlots["Pickup Slot Selector"]
+    CheckoutPage --> ThreeDS["ThreeDSecureDialog.tsx"]
+
+    Router -->|"#order/:id"| OrderPage["OrderPage.tsx (lifecycle & pickup)"]
+    Router -->|"#invoices"| InvoicesPage["InvoicesPage.tsx"]
+    InvoicesPage --> InvoiceView["InvoiceView.tsx (receipt & credit refunds)"]
+    Router -->|"#login"| LoginPage["LoginPage.tsx"]
+    Router -->|"#signup"| SignUpPage["SignUpPage.tsx"]
+    Router -->|"#account"| AccountPage["AccountPage.tsx (Profile, Addresses, Saved Cards, Data Export)"]
+    Router -->|"#setup / #admin"| SetupWizard["SetupWizard.tsx (Region, Stores, First Admin)"]
+    Router -->|"#portal"| PortalHub["PortalHub.tsx (Multi-Workspace Hub)"]
+    Router -->|"#manager"| ManagerPortal["ManagerPortal.tsx (GRN, CSV, Inventory, Transfers, Adjustments)"]
+    Router -->|"#finance / #accounting"| FinancePortal["FinancePortal.tsx (Analytics & Ledger)"]
+    FinancePortal --> AnalyticsDashboard["AnalyticsDashboard.tsx (Daily, Trends, Velocity, Margins, Tax)"]
+    Router -->|"#telemetry"| TelemetryDashboard["TelemetryDashboard.tsx (MELT, Probes, Chaos)"]
+
+    App --> CartDrawer["CartDrawer.tsx (LRU Cart Sync)"]
+    App -. "selectedProductId" .-> ProductDetailModal["ProductDetailModal.tsx"]

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Local environment files (each service ships a committed .env.example)
+.env
+.env.local
+
+# Runtime install-time store config written by POST /api/setup/install
+product-catalog-service/data/

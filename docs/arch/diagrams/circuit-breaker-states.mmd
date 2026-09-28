@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> CLOSED
+
+    CLOSED --> OPEN: rolling error rate ≥ 50%<br/>(errorThresholdPercentage)
+    OPEN --> HALF_OPEN: after 15000ms<br/>(resetTimeout)
+    HALF_OPEN --> CLOSED: probe request succeeds
+    HALF_OPEN --> OPEN: probe request fails
+
+    CLOSED: CLOSED
+    CLOSED: Requests hit the repository directly.
+    CLOSED: Each call has a 2000ms timeout.
+
+    OPEN: OPEN
+    OPEN: Requests short-circuit immediately.
+    OPEN: Fallback (stale snapshot) served instead.
+
+    HALF_OPEN: HALF-OPEN
+    HALF_OPEN: Exactly one trial request allowed through
+    HALF_OPEN: to test if the downstream recovered.

@@ -1,0 +1,166 @@
+erDiagram
+    CUSTOMERS ||--o{ SESSIONS : has
+    CUSTOMERS ||--o{ ADDRESSES : has
+    CUSTOMERS ||--o{ SAVED_PAYMENT_METHODS : saves
+    CUSTOMERS ||--o{ PASSWORD_RESET_TOKENS : requests
+    CUSTOMERS ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_LINES : contains
+    ORDERS ||--o| INVOICES : generates
+    ORDERS ||--o{ REFUNDS : has
+    PRODUCTS ||--o{ PRODUCT_SPECIFICATIONS : has
+    PRODUCTS ||--o{ PRODUCT_GALLERY_IMAGES : has
+    PRODUCTS ||--o{ CONFIGURATION_OPTIONS : has
+    CONFIGURATION_OPTIONS ||--o{ CONFIGURATION_CHOICES : has
+    PRODUCTS ||--o{ ORDER_LINES : referenced_by
+    PRODUCTS ||--o{ STORE_INVENTORY : tracked_in
+    PRODUCTS ||--o{ GOODS_RECEIPT_ITEMS : received_in
+    PRODUCTS ||--o{ STOCK_TRANSFERS : transferred_in
+    PRODUCTS ||--o{ STOCK_ADJUSTMENTS : adjusted_in
+    GOODS_RECEIPTS ||--|{ GOODS_RECEIPT_ITEMS : contains
+
+    CUSTOMERS {
+        text id PK
+        text email UK
+        text password_hash
+        text first_name
+        text last_name
+        text phone
+        text preferred_store_id
+        text role "customer | store-manager | admin"
+        text status "active | anonymized"
+        int failed_login_attempts
+        timestamptz locked_until
+    }
+
+    ADDRESSES {
+        text id PK
+        text customer_id FK
+        text kind "shipping | billing"
+        int is_default
+        text street1
+        text city
+        text region
+        text postal_code
+        text country
+    }
+
+    SAVED_PAYMENT_METHODS {
+        text id PK
+        text customer_id FK
+        text token_ref
+        text brand
+        text last4
+        int exp_month
+        int exp_year
+        int is_default
+    }
+
+    PRODUCTS {
+        text id PK
+        text name
+        text brand
+        text category
+        text subcategory
+        int price_minor
+        char3 currency
+        int stock
+        int snap_eligible
+        int is_weekly_find
+    }
+
+    STORE_INVENTORY {
+        text store_id PK
+        text product_id PK
+        int stock
+        int reserved
+        int unit_cost_minor
+        int low_stock_threshold
+        timestamptz updated_at
+    }
+
+    GOODS_RECEIPTS {
+        text id PK
+        text grn_number UK
+        text store_id
+        text supplier
+        text po_reference
+        text status "draft | received | cancelled"
+        int total_cost_minor
+        text received_by
+        timestamptz received_at
+        text notes
+    }
+
+    GOODS_RECEIPT_ITEMS {
+        text id PK
+        text grn_id FK
+        text product_id FK
+        int quantity
+        int unit_cost_minor
+        text batch_number
+        text expiry_date
+        timestamptz created_at
+    }
+
+    STOCK_TRANSFERS {
+        text id PK
+        text transfer_number UK
+        text from_store_id
+        text to_store_id
+        text product_id FK
+        int quantity
+        text status "pending | completed | cancelled"
+        timestamptz created_at
+        timestamptz completed_at
+    }
+
+    STOCK_ADJUSTMENTS {
+        text id PK
+        text store_id
+        text product_id FK
+        int quantity_delta
+        text reason "shrinkage | damage | expired | audit"
+        text adjusted_by
+        timestamptz created_at
+    }
+
+    ORDERS {
+        text id PK
+        text customer_id FK
+        text store_id
+        char3 currency
+        int subtotal_minor
+        int tax_minor
+        int total_minor
+        text status "placed | packed | ready | collected | cancelled | refunded"
+        text payment_status "pending | authorized | captured | refunded"
+        text pickup_window_start
+        text pickup_window_end
+    }
+
+    ORDER_LINES {
+        text id PK
+        text order_id FK
+        text product_id FK
+        int quantity
+        int unit_price_minor
+        int tax_minor
+    }
+
+    INVOICES {
+        text id PK
+        text order_id FK
+        text store_id
+        text number UK
+        int total_minor
+        timestamptz issued_at
+    }
+
+    REFUNDS {
+        text id PK
+        text order_id FK
+        text credit_receipt_number UK
+        int amount_minor
+        text reason
+        timestamptz created_at
+    }

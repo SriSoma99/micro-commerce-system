@@ -1,0 +1,24 @@
+{
+  "name": "payment-simulator",
+  "version": "1.0.0",
+  "description": "Local dummy payment gateway (Stripe-style sandbox): tokenizes test cards and simulates authorize / 3-D Secure / capture / refund. No real money ever moves.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "private": true,
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.1",
+    "typescript": "^5.9.3"
+  }
+}

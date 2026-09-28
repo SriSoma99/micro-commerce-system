@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant U as Browser
+    participant C as Controller
+    participant S as CatalogService
+    participant B as Opossum Breaker
+    participant R as Repository (mock DB)
+
+    U->>C: GET /api/products
+    C->>S: getProductList()
+    S->>B: fire()
+    B->>R: findAllProducts()
+    alt downstream healthy
+        R-->>B: ProductDetail[]
+        B-->>S: resolved
+        S-->>C: { data, isFallback: false, source: "live-core" }
+    else downstream fails or times out (>2000ms)
+        R--xB: rejected / timeout
+        B-->>S: rejected (breaker records failure)
+        S->>S: catch → build fallback from static snapshot
+        S-->>C: { data, isFallback: true, source: "circuit-breaker-fallback" }
+    end
+    C-->>U: 200 OK + ResilientPayload envelope

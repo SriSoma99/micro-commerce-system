@@ -1,0 +1,29 @@
+flowchart TB
+    subgraph Host["Developer / CI Host"]
+        Browser["Browser<br/>(runs the React 19 SPA)"]
+    end
+
+    subgraph Compose["Docker Compose network: commerce-net"]
+        subgraph FE["storefront-client container<br/>Nginx :80 → host :3000"]
+            SPA["Static SPA bundle<br/>(React 19 + TypeScript, built by Vite)"]
+        end
+
+        subgraph BE["product-catalog-service container<br/>Node 22 :5001 → host :5001"]
+            Express["Express App / Routers"]
+            Breaker["Opossum Circuit Breakers<br/>(list + detail, isolated)"]
+            Platform["Platform Ports & Adapters<br/>(Tax, Payment, Receipt, Identity, Email)"]
+            SQLite[("SQLite Database<br/>better-sqlite3 + WAL<br/>/app/data/catalog.db")]
+            Express --> Breaker --> SQLite
+            Express --> Platform
+        end
+
+        subgraph SIM["payment-simulator container<br/>Node 22 :5002 → host :5002"]
+            Gateway["Mock Stripe/EBT Gateway API<br/>Tokenize, Authorize, 3DS, Capture, Refund"]
+        end
+    end
+
+    Browser -- "GET / (initial load)" --> SPA
+    Browser -- "Tokenize card (publishable key)" --> Gateway
+    Browser -- "API requests (/api/*)" --> Express
+    Platform -- "Charge / Refund (secret key)" --> Gateway
+    SPA -. "fetch() calls from browser" .-> Express

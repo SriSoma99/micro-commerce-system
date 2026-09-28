@@ -1,0 +1,81 @@
+services:
+  product-catalog-service:
+    build:
+      context: ./product-catalog-service
+      target: production
+    container_name: product-catalog-service
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      NODE_ENV: production
+      CORS_ORIGIN: "http://localhost:3000"
+      DEMO_AUTO_INSTALL: "true"
+      DB_SIMULATED_FAILURE_RATE: 0
+      DB_SIMULATED_LATENCY_MAX_MS: 0
+      ENABLE_CHAOS: "true"
+      # One-time token for POST /api/setup/install (used if DEMO_AUTO_INSTALL is false).
+      SETUP_TOKEN: "${SETUP_TOKEN:-}"
+      # Synthetic demo customers (all use the password Demo@1234).
+      SEED_SYNTHETIC_DATA: "${SEED_SYNTHETIC_DATA:-true}"
+      # Server-to-server URL of the dummy payment gateway, and the browser tokenization URL.
+      PAYMENT_GATEWAY_URL: "http://payment-simulator:5002"
+      PAYMENT_GATEWAY_PUBLIC_URL: "${PAYMENT_GATEWAY_PUBLIC_URL:-http://localhost:5002}"
+    depends_on:
+      - payment-simulator
+    volumes:
+      # SQLite database + install-time store config survive `down`/`up`.
+      - catalog-data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5001/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - commerce-net
+
+  # Local dummy payment gateway (Stripe-style sandbox). No real money ever moves.
+  payment-simulator:
+    build:
+      context: ./payment-simulator
+    container_name: payment-simulator
+    ports:
+      - "5002:5002"
+    environment:
+      PORT: 5002
+      NODE_ENV: production
+      CORS_ORIGIN: "http://localhost:3000"
+      # Delay (ms) added to every simulated payment call, so a demo checkout
+      # feels like a real processor. 0 = instant.
+      PAYMENT_SIMULATION_LATENCY_MS: "${PAYMENT_SIMULATION_LATENCY_MS:-500}"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5002/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - commerce-net
+
+  storefront-client:
+    build:
+      context: ./storefront-client
+      target: production
+    container_name: storefront-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - product-catalog-service
+    restart: unless-stopped
+    networks:
+      - commerce-net
+
+volumes:
+  catalog-data:
+
+networks:
+  commerce-net:
+    driver: bridge

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "sqlite-catalog": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db-path",
+        "c:/myworks/myfullstack/micro-commerce-system/product-catalog-service/catalog.db"
+      ],
+      "env": {
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}

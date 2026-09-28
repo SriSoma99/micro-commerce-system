@@ -1,0 +1,20 @@
+flowchart TD
+    Routes["routes/<br/>(auth, catalog, cart, checkout, customer, fulfilment, refund, setup, receiving, accounting, observability, savedPayment)"]
+    Middleware["middleware/<br/>(requireAuth, requireRole, trace)"]
+    Controllers["controllers/<br/>(auth, catalog, cart, checkout, customer, fulfilment, refund, setup, receiving, accounting, observability, savedPayment)"]
+    Services["services/<br/>(catalogService, checkoutService, cartService, refundService, pickupSlotService, authService, passwordResetService, receivingService, accountingService)"]
+    Observability["observability/<br/>(metricsEngine, telemetryRegistry, structuredLogger)"]
+    Breaker["Opossum Circuit Breakers<br/>(list + detail resilience)"]
+    Platform["Platform Ports & Registry<br/>(TaxProvider, PaymentProvider, ReceiptTemplate, IdentityProvider, EmailProvider)"]
+    Repositories["data/*Repository.ts<br/>(customer, session, address, product, order, invoice, savedPayment, inventory, receiving, accounting)"]
+    DB[("SQLite Database<br/>better-sqlite3 + WAL + FTS5")]
+
+    Routes --> Middleware --> Controllers
+    Controllers --> Services
+    Controllers --> Observability
+    Services --> Breaker
+    Services --> Platform
+    Services --> Observability
+    Breaker --> Repositories
+    Services --> Repositories
+    Repositories --> DB
