@@ -41,7 +41,7 @@ flowchart TB
     SPA -. "fetch() calls from browser" .-> Express
 ```
 
-**Why the browser tokenizes directly with the payment gateway:** card numbers never touch the shop backend (`product-catalog-service`), fulfilling PCI-DSS compliance standards. The storefront client receives a one-time payment token from `payment-simulator` and submits only the token to `POST /api/checkout`.
+**Why the browser tokenizes directly with the payment gateway:** card numbers never touch the shop backend (`product-catalog-service`), which keeps the shop backend out of PCI-DSS card-data scope (the pattern a real Stripe integration relies on; this is a simulator, not a certified gateway). The storefront client receives a one-time payment token from `payment-simulator` and submits only the token to `POST /api/checkout`.
 
 ## End-to-End Request Flow
 

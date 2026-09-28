@@ -32,7 +32,7 @@ The monorepo is composed of three independently deployable services communicatin
 ### 2. 🏪 Full Multi-Store Grocery Commerce Loop
 - **1,398 Seeded Grocery SKUs:** FTS5 full-text search, facet counts, dietary tags (gluten-free, organic, vegan), unit pricing (per oz/lb), and SNAP/EBT eligibility tags.
 - **Per-Store Inventory & 1-Hour Pickup Slots:** Tracks stock, reservations, and available units across 5 physical store locations in 3 states (IL, OH, PA).
-- **PCI-Compliant Sandbox Payments:** Publishable key tokenization in the browser, secret key charge/refund execution on the backend, 3DS challenge dialogs, and immutable US retail receipts.
+- **PCI-Style Tokenized Sandbox Payments:** Card data never touches the shop backend — publishable key tokenization in the browser, secret key charge/refund execution on the backend, 3DS challenge dialogs, and immutable US retail receipts.
 
 ### 3. 🌐 Multi-Role Workspaces & Operational Portals (`#/portal`)
 - 🛍️ **Shopper Storefront (`#/shop`):** Category browsing, weekly finds, dietary filtering, cart drawer, and curbside pickup checkout.

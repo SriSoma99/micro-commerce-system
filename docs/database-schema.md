@@ -196,7 +196,7 @@ The grocery catalog uses SQLite's **FTS5 full-text search extension** with Porte
 
 1. **Integer Minor Units (Cents)**: All financial amounts (`price_minor`, `subtotal_minor`, `tax_minor`, `total_minor`, `unit_price_minor`, `unit_cost_minor`, `total_cost_minor`) are stored as 64-bit integers to prevent floating-point rounding errors.
 2. **Immutable Snapshots**: Orders and invoices snapshot unit prices, tax rates, applied fees, and store state at the moment of placement. Updates to product master data or customer profile do not alter historical records.
-3. **PCI Compliance**: Saved payment methods store only token references (`token_ref`), brand, last 4 digits, and expiration dates. Full card numbers and CVVs are never written to disk or logged.
+3. **PCI-style data handling**: Saved payment methods store only token references (`token_ref`), brand, last 4 digits, and expiration dates. Full card numbers and CVVs are never written to disk or logged.
 4. **Anonymization over Hard Deletion**: Account deletion (`DELETE /api/customers/me`) anonymizes PII (clears phone, names, addresses) while preserving orders and invoices required for tax and audit compliance.
 5. **Weighted Average Costing ($WAC$)**: Material intake recalculates per-store average unit cost dynamically on receipt: `(oldStock * oldWac + receivedQty * unitCost) / (oldStock + receivedQty)`.
 6. **Sequential Legal Document Numbering**: Zero-gap sequence counters (`invoice_sequences`, `grn_sequences`) guarantee strict sequential audit numbers per store (`INV-STORE-XXXX`, `GRN-STORE-XXXX`).
